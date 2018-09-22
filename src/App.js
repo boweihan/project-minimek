@@ -2,8 +2,26 @@ import React, { Component } from "react";
 import { Header, Container, Menu } from "semantic-ui-react";
 import "./App.css";
 
+import TabBarContainer from "./features/tabs/TabBarContainer";
+
+const UnitInfo = () => <div>Unit Info content</div>;
+const Pilots = () => <div>Pilots content</div>;
+const Mechs = () => <div>Mechs content</div>;
+const UnitOrganization = () => <div>Unit Organization content</div>;
+
 class App extends Component {
   render() {
+    const tabs = [
+      { name: "unitInfo", label: "Unit Info", component: UnitInfo },
+      { name: "pilots", label: "Pilots", component: Pilots },
+      { name: "mechs", label: "Mechs", component: Mechs },
+      {
+        name: "unitOrganization",
+        label: "Unit Organization",
+        component: UnitOrganization
+      }
+    ];
+
     return (
       <div className="App">
         <div className="App-header">
@@ -12,20 +30,7 @@ class App extends Component {
           </Header>
         </div>
         <Container>
-          <Menu tabular size="massive">
-            <Menu.Item name="unitInfo" active={true}>
-              Unit Info
-            </Menu.Item>
-            <Menu.Item name="pilots" active={false}>
-              Pilots
-            </Menu.Item>
-            <Menu.Item name="mechs" active={false}>
-              Mechs
-            </Menu.Item>
-            <Menu.Item name="unitOrganization" active={false}>
-              Unit Organization
-            </Menu.Item>
-          </Menu>
+          <TabBarContainer tabs={tabs} size="massive" />
         </Container>
       </div>
     );
