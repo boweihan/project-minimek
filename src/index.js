@@ -2,6 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
 
+import "semantic-ui-css/semantic.css";
 import "./index.css";
 
 import registerServiceWorker from "./registerServiceWorker";
@@ -30,20 +31,19 @@ if (module.hot) {
     const RedBox = require("redbox-react").default;
     ReactDOM.render(<RedBox error={error} />, rootEl);
   };
-	
-	render = () => {
-		try {
-			renderApp();
-		}
-		catch(error) {
-			console.error(error);
-			renderError(error);
-		}
-	}
 
-	module.hot.accept("./App", () => {
-		setTimeout(render);
-	});
+  render = () => {
+    try {
+      renderApp();
+    } catch (error) {
+      console.error(error);
+      renderError(error);
+    }
+  };
+
+  module.hot.accept("./App", () => {
+    setTimeout(render);
+  });
 }
 
 render();
