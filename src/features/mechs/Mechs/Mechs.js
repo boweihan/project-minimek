@@ -8,6 +8,9 @@ import MechDetails from "../MechDetails";
 
 import schema from "app/schema";
 
+import { selectMech } from "../mechActions";
+import { selectCurrentMech } from "../mechSelectors";
+
 const mapState = state => {
   const session = schema.session(state.entities);
   const { Mech } = session;
@@ -27,27 +30,36 @@ const mapState = state => {
       }
       return mech;
     });
+  const currentMech = selectCurrentMech(state);
+  return { mechs, currentMech };
+};
 
-  return { mechs };
+const actions = {
+  selectMech
 };
 
 class Mechs extends Component {
   render() {
-    const { mechs = [] } = this.props;
+    const { mechs = [], selectMech, currentMech } = this.props;
 
-    const currentMech = mechs[0] || {};
+    const currentMechEntry =
+      mechs.find(mech => mech.id === currentMech) || {};
 
     return (
       <Segment>
         <Grid>
           <Grid.Column width={10}>
             <Header as="h3">Mechs List</Header>
-            <MechsList mechs={mechs} />
+            <MechsList
+              mechs={mechs}
+              onMechClicked={selectMech}
+              currentMech={currentMech}
+            />
           </Grid.Column>
           <Grid.Column width={6}>
             <Header as="h3">Mech Details</Header>
             <Segment>
-              <MechDetails mech={currentMech} />
+              <MechDetails mech={currentMechEntry} />
             </Segment>
           </Grid.Column>
         </Grid>
@@ -55,4 +67,7 @@ class Mechs extends Component {
     );
   }
 }
-export default connect(mapState)(Mechs);
+export default connect(
+  mapState,
+  actions
+)(Mechs);
