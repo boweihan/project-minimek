@@ -1,49 +1,58 @@
-import React, {Component} from "react";
+import React, { Component } from "react";
+import { connect } from "react-redux";
 
-import {
-    Grid,
-    Segment,
-    Header,
-} from "semantic-ui-react";
+import { Grid, Segment, Header } from "semantic-ui-react";
 
 import MechsList from "../MechsList";
 import MechDetails from "../MechDetails";
 
-const mechs = [
-    {
-        id : 1,
-        name : "Warhammer",
-        type : "WHM-6R",
-        weight : 70,
-    }
-];
+import schema from "app/schema";
+
+const mapState = state => {
+  const session = schema.session(state.entities);
+  const { Mech } = session;
+
+  const mechs = Mech.all()
+    .toModelArray()
+    .map(mechModel => {
+      const mech = {
+        ...mechModel.ref,
+        // provide a default empty object for the relation mech to type
+        mechType: {}
+      };
+
+      if (mechModel.type) {
+        // Replace the default object with a copy of the relations data
+        mech.mechType = { ...mechModel.type.ref };
+      }
+      return mech;
+    });
+
+  return { mechs };
+};
 
 class Mechs extends Component {
-    state = {
-        mechs : mechs,
-    }
+  render() {
+    const { mechs = [] } = this.props;
 
-    render() {
-        const {mechs} = this.state;
+    const currentMech = mechs[0] || {};
 
-        const currentMech = mechs[0] || {};
-
-        return (
+    return (
+      <Segment>
+        <Grid>
+          <Grid.Column width={10}>
+            <Header as="h3">Mechs List</Header>
+            <MechsList mechs={mechs} />
+          </Grid.Column>
+          <Grid.Column width={6}>
+            <Header as="h3">Mech Details</Header>
             <Segment>
-                <Grid>
-                    <Grid.Column width={10}>
-                        <Header as="h3">Mechs List</Header>
-                        <MechsList mechs={mechs}/>
-                    </Grid.Column>
-                    <Grid.Column width={6}>
-                        <Header as="h3">Mech Details</Header>
-                        <Segment >
-                            <MechDetails mech={currentMech} />
-                        </Segment>
-                    </Grid.Column>
-                </Grid>
+              <MechDetails mech={currentMech} />
             </Segment>
-        );
-    }
+          </Grid.Column>
+        </Grid>
+      </Segment>
+    );
+  }
 }
-export default Mechs;
+export default connect(mapState)(Mechs);
