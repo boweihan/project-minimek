@@ -8,49 +8,65 @@ import PilotDetails from "../PilotDetails";
 
 import schema from "app/schema";
 
+import { selectPilot } from "../pilotsActions";
+import { selectCurrentPilot } from "../pilotsSelectors";
+
 const mapState = state => {
   const session = schema.session(state.entities);
   const { Pilot } = session;
 
-  const pilots = Pilot.all().toModelArray().map(pilotModel => {
-    // access underlying plain JS object with ref field and make copy
-    const pilot = {
-      ...pilotModel.ref
-    };
+  const pilots = Pilot.all()
+    .toModelArray()
+    .map(pilotModel => {
+      // access underlying plain JS object with ref field and make copy
+      const pilot = {
+        ...pilotModel.ref
+      };
 
-    // lookup using FK field
-    const { mech } = pilotModel;
+      // lookup using FK field
+      const { mech } = pilotModel;
 
-    // if there is an associated mech include the mech id in the data
-    // passed to the component
-    if (mech && mech.type) {
-      pilot.mechType = mech.type.id;
-    }
+      // if there is an associated mech include the mech id in the data
+      // passed to the component
+      if (mech && mech.type) {
+        pilot.mechType = mech.type.id;
+      }
 
-    return pilot;
-  });
+      return pilot;
+    });
 
-  return { pilots };
+  const currentPilot = selectCurrentPilot(state);
+
+  return { pilots, currentPilot };
+};
+
+const actions = {
+  selectPilot
 };
 
 export class Pilots extends Component {
   render() {
-    const { pilots = [] } = this.props;
+    const { pilots = [], selectPilot, currentPilot } = this.props;
 
     // Use the first pilot as the "current" one for display, if available.
-    const currentPilot = pilots[0] || {};
+    const currentPilotEntry =
+      pilots.find(pilot => pilot.id === currentPilot) || {};
 
     return (
       <Segment>
         <Grid>
           <Grid.Column width={10}>
             <Header as="h3">Pilot List</Header>
-            <PilotsList pilots={pilots} />
+            <PilotsList
+              pilots={pilots}
+              onPilotClicked={selectPilot}
+              currentPilot={currentPilot}
+            />
           </Grid.Column>
           <Grid.Column width={6}>
             <Header as="h3">Pilot Details</Header>
             <Segment>
-              <PilotDetails pilot={currentPilot} />
+              <PilotDetails pilot={currentPilotEntry} />
             </Segment>
           </Grid.Column>
         </Grid>
@@ -59,4 +75,7 @@ export class Pilots extends Component {
   }
 }
 
-export default connect(mapState)(Pilots);
+export default connect(
+  mapState,
+  actions
+)(Pilots);
