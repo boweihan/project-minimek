@@ -3,7 +3,6 @@ import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
 
 import "semantic-ui-css/semantic.css";
-import "./index.css";
 
 import registerServiceWorker from "./registerServiceWorker";
 
@@ -14,7 +13,7 @@ const store = configureStore();
 const rootEl = document.getElementById("root");
 
 let render = () => {
-  const App = require("./App").default;
+  const App = require("./layout/App").default;
   ReactDOM.render(
     <Provider store={store}>
       <App />
