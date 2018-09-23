@@ -11,9 +11,26 @@ import schema from "app/schema";
 const mapState = state => {
   const session = schema.session(state.entities);
   const { Pilot } = session;
-  const pilots = Pilot.all().toRefArray();
-  console.log(pilots);
-	return { pilots };
+
+  const pilots = Pilot.all().toModelArray().map(pilotModel => {
+    // access underlying plain JS object with ref field and make copy
+    const pilot = {
+      ...pilotModel.ref
+    };
+
+    // lookup using FK field
+    const { mech } = pilotModel;
+
+    // if there is an associated mech include the mech id in the data
+    // passed to the component
+    if (mech && mech.type) {
+      pilot.mechType = mech.type.id;
+    }
+
+    return pilot;
+  });
+
+  return { pilots };
 };
 
 export class Pilots extends Component {
