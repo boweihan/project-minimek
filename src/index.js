@@ -13,7 +13,7 @@ const store = configureStore();
 const rootEl = document.getElementById("root");
 
 let render = () => {
-  const App = require("./layout/App").default;
+  const App = require("./app/layout/App").default;
   ReactDOM.render(
     <Provider store={store}>
       <App />
