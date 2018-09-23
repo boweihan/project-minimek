@@ -10,7 +10,7 @@ export function loadData(state, payload) {
   const { Pilot } = session;
   const { pilots } = payload;
   pilots.forEach(pilot => Pilot.parse(pilot));
-	return session;
+	return session.state;
 }
 
 export default createReducer(initialState, {
